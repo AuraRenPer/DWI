@@ -5,18 +5,22 @@ import ImageLogin from '../ImageLogin';
 import './Layout.css';
 
 
-const LayoutComponent = () => {
+/* Pasar por propiedades los cambios 
+Layout Component Reutilizable
+
+*/
+const LayoutComponent = ({ leftColSize, rightColSize, LeftContent, rightContent }) => {
     return (
         <div className="layout-container">
             <Row>
-                <Col xs={0} sm={0} md={4} lg={6}>
+                <Col xs={leftColSize.xs} sm={leftColSize.sm} md={leftColSize.md} lg={leftColSize.lg}>
                     <div className="content-left">
-                        <ImageLogin />
+                        {LeftContent}
                     </div>
                 </Col>
-                <Col xs={24} sm={24} md={20} lg={18}>
+                <Col xs={rightColSize.xs} sm={rightColSize.sm} md={rightColSize.md} lg={rightColSize.lg}>
                     <div className="content-right">
-                        <FormLogin />
+                        {rightContent}
                     </div>
                 </Col>
             </Row>
