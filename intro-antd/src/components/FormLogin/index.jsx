@@ -54,7 +54,6 @@ const FormLogin = () => {
                         </Button>
                     </Form.Item>
                     ¿Aún no tienes cuenta? <a href='#'>Registrate</a>
-                        Crear el form de registro
                 </Form>
 
             </Card>
