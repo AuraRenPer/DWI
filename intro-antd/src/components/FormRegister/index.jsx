@@ -4,6 +4,8 @@ import { UserOutlined, LockOutlined, MailFilled, MailOutlined } from '@ant-desig
 import '../FormRegister'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import authService from '../../services/auth.js';
+import {validatePassword} from '../utils/validation.js'
 
 const FormRegister = () => {
 
@@ -18,13 +20,8 @@ const FormRegister = () => {
         setLoading(true);
         //console.log('Success:', values);
         try {
-            const response = await axios.post('https://lizard-server.vercel.app/api/auth/signup', {
-                username: values.username,
-                email: values.email,
-                password: values.password,
-                roles: ['moderador']
-            });
-            console.log('Registro exitoso:', response.data);
+            await authService.register(values.username, values.email, values.password);
+            console.log('Registro exitoso:');
             navigate('/login');
         } catch (error) {
             if (error.response) {
@@ -41,16 +38,6 @@ const FormRegister = () => {
         console.log('Failed', errorInfo);
         setRegisterError(true);
     }
-
-    //Recibe el argumento que se utiliza para obtener el valor de un campo específico del formulario
-    const validatePassword = ({ getFieldValue }) => ({
-        validator(_, value) {
-            if (!value || getFieldValue('password') === value) {
-                return Promise.resolve();
-            }
-            return Promise.reject(new Error('Las contraseñas no coinciden'));
-        }
-    })
 
     return (
         <>

@@ -4,8 +4,13 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import './FormLogin.css'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import authService from '../../services/auth';
+import {useAuth} from '../../hooks/useAuth'
+
 const FormLogin = () => {
 
+    const useAuthData = useAuth();
+    console.log(useAuthData);
     const navigate = useNavigate();
 
     //useState es menajeo de estado (error y carga)
@@ -15,15 +20,19 @@ const FormLogin = () => {
 
     const onFinish = async (values) => {
         setLoading(true); //Establece el estado de carga a true al enviar el formulario
+        setLoginError(false);
         //console.log('Success:', values);
         try {
-            const response = await axios.post('https://lizard-server.vercel.app/api/auth/signin', {
-                email: values.username, //Para este caso el email actua como el nombre de usuario
-                password: values.password
-            });
-            console.log('Inicio de sesión exitoso:', response.data);
-            localStorage.setItem('token', response.data.token) //Se guarda el token en almacenamiento
-            navigate('/'); //redirige al home
+            const response = await authService.loginForm(values.username, values.password);
+
+            if (response && response.data) {
+                localStorage.setItem('token', response.data.token);
+                console.log(response.data.token)
+                navigate('/'); //redirige al home
+            } else {
+                console.error('Error en el inicio de sesión: Respuesta inesperada');
+                setLoginError(true);
+            }
         } catch (error) {
             if (error.response) {
                 console.error('Error en el inicio de sesión:', error.response.data);
