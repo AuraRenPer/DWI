@@ -5,7 +5,7 @@ import '../FormRegister'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../services/auth.js';
-import {validatePassword} from '../utils/validation.js'
+import {validatePassword} from '../../utils/validation.js'
 
 const FormRegister = () => {
 

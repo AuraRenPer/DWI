@@ -1,34 +1,35 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Card, message } from 'antd';
+import React, { useState, useContext } from 'react';
+import { Form, Input, Button, Card } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import './FormLogin.css'
-import axios from 'axios';
+import './FormLogin.css';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../services/auth';
-import {useAuth} from '../../hooks/useAuth'
+import { AuthContext } from '../context/AuthContext';
 
 const FormLogin = () => {
-
-    const useAuthData = useAuth();
-    console.log(useAuthData);
+    const { login } = useContext(AuthContext); // Obtén la función login del contexto
     const navigate = useNavigate();
 
-    //useState es menajeo de estado (error y carga)
     const [loginError, setLoginError] = useState(false);
     const [loading, setLoading] = useState(false);
 
-
     const onFinish = async (values) => {
-        setLoading(true); //Establece el estado de carga a true al enviar el formulario
+        setLoading(true); // Establece el estado de carga a true al enviar el formulario
         setLoginError(false);
-        //console.log('Success:', values);
+
         try {
             const response = await authService.loginForm(values.username, values.password);
 
             if (response && response.data) {
-                localStorage.setItem('token', response.data.token);
-                console.log(response.data.token)
-                navigate('/'); //redirige al home
+                const token = response.data.generatedToken; // Asegúrate de que estás accediendo a la clave correcta
+                if (token) {
+                    localStorage.setItem('token', token);
+                    await login(token); // Llama a la función login del contexto
+                    navigate('/'); // Redirige al home
+                } else {
+                    console.error('Token no encontrado en la respuesta:', response.data);
+                    setLoginError(true);
+                }
             } else {
                 console.error('Error en el inicio de sesión: Respuesta inesperada');
                 setLoginError(true);
@@ -41,13 +42,16 @@ const FormLogin = () => {
             }
             setLoginError(true);
         } finally {
-            setLoading(false); //Establece el estado de carga a false despues de recibir la respuesta
+            setLoading(false); // Establece el estado de carga a false después de recibir la respuesta
         }
-    }
+    };
+
+
     const onFinishFailed = (errorInfo) => {
         console.log('Failed', errorInfo);
         setLoginError(true);
-    }
+    };
+
     return (
         <>
             <Card
@@ -64,7 +68,6 @@ const FormLogin = () => {
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                 >
-
                     <Form.Item
                         name='username'
                         rules={[
@@ -89,17 +92,16 @@ const FormLogin = () => {
                         <Input.Password prefix={<LockOutlined />} placeholder='Contraseña' />
                     </Form.Item>
                     <Form.Item>
-
-                        {loginError && <p style={{ color: 'red' }}>Credenicales incorrecras. Intentalo de nuevo</p>}
+                        {loginError && <p style={{ color: 'red' }}>Credenciales incorrectas. Inténtalo de nuevo</p>}
                         <Button type='primary' htmlType='submit' className='login-form-button' loading={loading}>
                             Iniciar Sesión
                         </Button>
                     </Form.Item>
-                    ¿Aún no tienes cuenta? <a href='/register'>Registrate</a>
+                    ¿Aún no tienes cuenta? <a href='/register'>Regístrate</a>
                 </Form>
             </Card>
         </>
     );
-}
+};
 
 export default FormLogin;
