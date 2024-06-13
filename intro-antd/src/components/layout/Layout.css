@@ -7,7 +7,7 @@
 
 .content-left {
     height: 100vh;
-    background: rgb(255, 60, 161);
+    background: rgb(12, 17, 111);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,7 +15,7 @@
 
 .content-right {
     height: 100vh;
-    background: rgb(240, 0, 216);
+    background: rgb(91, 95, 170);
     display: flex;
     justify-content: center;
     align-items: center;

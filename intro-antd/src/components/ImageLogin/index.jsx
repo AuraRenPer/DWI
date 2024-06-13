@@ -1,6 +1,6 @@
 import React from 'react';
 
-import loginImage from '../../assets/kirby3.png';
+import loginImage from '../../assets/api.png';
 
 const ImageLogin = () => {
   return (
