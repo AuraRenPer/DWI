@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { Modal, Button, Input, Switch } from 'antd';
 import { ENV } from '../../../utils/constants';
 import './ProductsTable.css'; // Asegúrate de que la ruta sea correcta
+import authService from '../../../services/admisiones';
+import { AuthContext } from '../../context/AuthContext';
 
 const ProductsTable = () => {
     const [products, setProducts] = useState([]);
@@ -11,7 +13,15 @@ const ProductsTable = () => {
     const [modalMode, setModalMode] = useState('add');
     const [currentProduct, setCurrentProduct] = useState(null);
     const [newName, setNewName] = useState('');
-    const [newActivo, setNewActivo] = useState(false); 
+    const [newActivo, setNewActivo] = useState(false);
+
+    // Estado de error de registro
+    const [registroError, setRegisterError] = useState(false);
+    // Estado de carga 
+    const [loading, setLoading] = useState(false);
+
+    // Contexto de autenticación
+    const { token } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -30,54 +40,28 @@ const ProductsTable = () => {
         fetchProducts();
     }, []);
 
-    const deleteProduct = async (id) => {
-        try {
-            await axios.delete(`${ENV.API_URL}/${ENV.ENDPOINTS.DELETE}/${id}`);
-            setProducts(products.filter(product => product._id !== id));
-        } catch (err) {
-            setError('Error al eliminar el producto');
-            console.error(err);
-        }
-    };
+    const addProduct = async (values) => {
+        setLoading(true);
 
-    const confirmDeleteProduct = (id) => {
-        Modal.confirm({
-            title: '¿Está seguro que desea eliminar este producto?',
-            content: 'Esta acción no se puede deshacer.',
-            onOk: () => deleteProduct(id),
-            onCancel: () => console.log('Cancelado'),
-        });
-    };
-
-    const addProduct = async () => {
         try {
-            const response = await axios.post(`${ENV.API_URL}/${ENV.ENDPOINTS.ADMISION}`, {
-                nombre: newName,
-                activo: newActivo,
-            });
-            setProducts([...products, response.data]); // Agregar el nuevo producto a la lista
-            setIsModalVisible(false);
-            setNewName('');
-            setNewActivo(false);
-        } catch (err) {
-            setError('Error al agregar el producto');
-            console.error(err);
-        }
-    };
-
-    const updateProduct = async () => {
-        try {
-            await axios.put(`${ENV.API_URL}/${ENV.ENDPOINTS.DELETE}/${currentProduct._id}`, {
-                nombre: newName,
-                activo: newActivo,
-            });
-            setProducts(products.map(product => product._id === currentProduct._id ? { ...product, nombre: newName, activo: newActivo } : product));
-            setIsModalVisible(false);
-            setNewName('');
-            setNewActivo(false);
-        } catch (err) {
-            setError('Error al actualizar el producto');
-            console.error(err);
+            if (token) {
+                console.log('Token:', token);
+                console.log('Datos del formulario:', values);
+                // Aquí deberías implementar el POST a tu API, incluyendo el token en los headers
+                await authService.addProduct(values.newName, values.newActivo, token);
+            } else {
+                console.error('Token no encontrado');
+                setRegisterError(true);
+            }
+        } catch (error) {
+            if (error.response) {
+                console.error('Error en el registro:', error.response.data);
+            } else {
+                console.error('Error en el registro:', error.message);
+            }
+            setRegisterError(true);
+        } finally {
+            setLoading(false); // Establece el estado de carga a false después de recibir cualquier respuesta
         }
     };
 
@@ -89,18 +73,27 @@ const ProductsTable = () => {
         } else {
             setCurrentProduct(null);
             setNewName('');
-            setNewActivo(false); 
+            setNewActivo(false);
         }
         setModalMode(mode);
         setIsModalVisible(true);
     };
 
     const handleOk = () => {
+        const values = {
+            newName,
+            newActivo,
+        };
+
         if (modalMode === 'add') {
-            addProduct();
+            addProduct(values);
         } else if (modalMode === 'edit' && currentProduct) {
-            updateProduct();
+            // updateProduct(values); // Asegúrate de implementar updateProduct si no lo tienes
         }
+
+        setIsModalVisible(false);
+        setNewName('');
+        setNewActivo(false);
     };
 
     const handleCancel = () => {
