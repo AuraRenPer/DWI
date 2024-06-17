@@ -8,7 +8,7 @@ const ProductsPage = () => {
     return (
         <>
             {/*<Navbar />*/}
-            <div style={{ marginTop: '70px' }}>
+            <div>
                     <LayoutComponent
                         leftColSize={{ xs: 24, sm: 24, md: 8, lg: 6 }}
                         rightColSize={{ xs: 24, sm: 24, md: 16, lg: 18 }}

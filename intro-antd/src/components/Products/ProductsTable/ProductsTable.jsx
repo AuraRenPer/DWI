@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { Modal, Button, Input, Switch } from 'antd';
 import { ENV } from '../../../utils/constants';
-import './ProductsTable.css'; // Asegúrate de que la ruta sea correcta
+import './ProductsTable.css';
 import authService from '../../../services/admisiones';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -21,7 +21,7 @@ const ProductsTable = () => {
     const [loading, setLoading] = useState(false);
 
     // Contexto de autenticación
-    const { token } = useContext(AuthContext);
+    const { user, token } = useContext(AuthContext);
 
     const fetchProducts = async () => {
         try {
@@ -44,44 +44,22 @@ const ProductsTable = () => {
     const addProduct = async (values) => {
         setLoading(true);
         try {
-            if (token) {
-                console.log('Token:', token);
-                console.log('Datos del formulario:', values);
-                await authService.addProduct(values.newName, values.newActivo, token);
-                fetchProducts();
-            } else {
-                console.error('Token no encontrado');
-                setRegisterError(true);
-            }
+            await authService.addProduct(values.newName, values.newActivo, token);
+            fetchProducts();
         } catch (error) {
-            if (error.response) {
-                console.error('Error en el registro:', error.response.data);
-            } else {
-                console.error('Error en el registro:', error.message);
-            }
-            setRegisterError(true);
+            handleApiError(error);
         } finally {
-            setLoading(false); // Establece el estado de carga a false después de recibir cualquier respuesta
+            setLoading(false);
         }
     };
 
     const editProduct = async (id, values) => {
         setLoading(true);
         try {
-            if (token) {
-                await authService.editProduct(id, values.newName, values.newActivo, token);
-                fetchProducts();
-            } else {
-                console.error('Token no encontrado');
-                setRegisterError(true);
-            }
+            await authService.editProduct(id, values.newName, values.newActivo, token);
+            fetchProducts();
         } catch (error) {
-            if (error.response) {
-                console.error('Error en la edición:', error.response.data);
-            } else {
-                console.error('Error en la edición:', error.message);
-            }
-            setRegisterError(true);
+            handleApiError(error);
         } finally {
             setLoading(false);
         }
@@ -90,23 +68,22 @@ const ProductsTable = () => {
     const deleteProduct = async (id) => {
         setLoading(true);
         try {
-            if (token) {
-                await authService.deleteProduct(id, token);
-                fetchProducts();
-            } else {
-                console.error('Token no encontrado');
-                setRegisterError(true);
-            }
+            await authService.deleteProduct(id, token);
+            fetchProducts();
         } catch (error) {
-            if (error.response) {
-                console.error('Error en la eliminación:', error.response.data);
-            } else {
-                console.error('Error en la eliminación:', error.message);
-            }
-            setRegisterError(true);
+            handleApiError(error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleApiError = (error) => {
+        if (error.response) {
+            console.error('Error:', error.response.data);
+        } else {
+            console.error('Error:', error.message);
+        }
+        setRegisterError(true);
     };
 
     const showModal = (mode, product) => {
@@ -163,7 +140,7 @@ const ProductsTable = () => {
 
     return (
         <div className="table-container">
-            <button className="add-button" onClick={() => showModal('add', null)}>Agregar</button>
+            {user && <button className="add-button" onClick={() => showModal('add', null)}>Agregar</button>}
             <table className="formato-tabla">
                 <thead>
                     <tr>
@@ -182,8 +159,12 @@ const ProductsTable = () => {
                             <td>{formatDate(product.createdAt)}</td>
                             <td>{product.activo ? 'Activo' : 'Inactivo'}</td>
                             <td>
-                                <button onClick={() => confirmDeleteProduct(product._id)}>Eliminar</button>
-                                <button onClick={() => showModal('edit', product)}>Editar</button>
+                                {user && (
+                                    <>
+                                        <button onClick={() => confirmDeleteProduct(product._id)}>Eliminar</button>
+                                        <button onClick={() => showModal('edit', product)}>Editar</button>
+                                    </>
+                                )}
                             </td>
                         </tr>
                     ))}
