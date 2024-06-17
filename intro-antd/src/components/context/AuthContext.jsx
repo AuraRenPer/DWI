@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { storageController } from '../../services/token'; // Importa el controlador de almacenamiento
+import { storageController } from '../../services/token';
 import { usersService } from '../../services/users';
 import { tokenExpired } from '../../utils/tokenExpired';
 
@@ -8,10 +8,8 @@ export const AuthContext = createContext();
 
 export const AuthProvider = (props) => {
     const { children } = props;
-    //Crear el estado del usuario
     const [user, setUser] = useState(null);
-    //Crear el estado de carga
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         getSession();
@@ -19,17 +17,17 @@ export const AuthProvider = (props) => {
 
     const getSession = async () => {
         const token = await storageController.getToken();
-        if(!token){
-            logout()
+        if (!token) {
+            logout();
             setLoading(false);
-            return
-        } if (tokenExpired(token)){
-            logout()
-        }else {
-            login(token)
+            return;
         }
-        
-    }
+        if (tokenExpired(token)) {
+            logout();
+        } else {
+            login(token);
+        }
+    };
 
     const login = async (token) => {
         try {
@@ -38,33 +36,55 @@ export const AuthProvider = (props) => {
             const response = await usersService.getMe(token);
             setUser(response);
             setLoading(false);
-            console.log(response); //muestra el objeto del usuario en consola
+            console.log(response);
         } catch (error) {
             console.error(error);
             setLoading(false);
         }
-    }
+    };
+
+    const updateUserData = async (updatedUserData) => {
+        try {
+            const token = await storageController.getToken();
+            if (!token) {
+                throw new Error('No hay token disponible');
+            }
+    
+            console.log('Actualizando datos del usuario:', updatedUserData);
+            const response = await usersService.updateUser(user._id, updatedUserData);
+            setUser(response);
+            setLoading(false);
+            console.log('Datos actualizados del usuario:', response);
+        } catch (error) {
+            console.error('Error al actualizar datos del usuario:', error);
+            setLoading(false);
+        }
+    };
+    
+
+
     const logout = async () => {
         try {
-            await storageController.removeToken()
-            setUser(null)
-            setLoading(false)
+            await storageController.removeToken();
+            setUser(null);
+            setLoading(false);
         } catch (error) {
             console.error(error);
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
     const data = {
         user,
         login,
         logout,
-        upDataUser: () => console.log('update user')
+        updateUserData,
     };
-    if (loading) return null
+
+    if (loading) return null;
     return (
         <AuthContext.Provider value={data}>
             {children}
         </AuthContext.Provider>
-    )
-}
+    );
+};
