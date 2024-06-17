@@ -1,9 +1,11 @@
 import React, { useState, useEffect, createContext } from 'react';
-import { storageController } from '../../services/token'; // Importa el controlador de almacenamiento
+import { storageController } from '../../services/token';
+
 import { usersService } from '../../services/users';
 import { tokenExpired } from '../../utils/tokenExpired';
 
 export const AuthContext = createContext();
+
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -25,7 +27,9 @@ export const AuthProvider = ({ children }) => {
         } else {
             login(token);
         }
-    }
+    };
+
+
 
     const login = async (token) => {
         try {
@@ -34,12 +38,31 @@ export const AuthProvider = ({ children }) => {
             const response = await usersService.getMe(token);
             setUser(response);
             setLoading(false);
-            console.log(response); //muestra el objeto del usuario en consola
+            console.log(response);
         } catch (error) {
             console.error(error);
             setLoading(false);
         }
-    }
+    };
+
+    const updateUserData = async (updatedUserData) => {
+        try {
+            const token = await storageController.getToken();
+            if (!token) {
+                throw new Error('No hay token disponible');
+            }
+
+            console.log('Actualizando datos del usuario:', updatedUserData);
+            const response = await usersService.updateUser(user._id, updatedUserData, token);
+            setUser(response);
+            setLoading(false);
+            console.log('Datos actualizados del usuario:', response);
+        } catch (error) {
+            console.error('Error al actualizar datos del usuario:', error);
+            setLoading(false);
+        }
+    };
+    
 
     const logout = async () => {
         try {
@@ -50,14 +73,14 @@ export const AuthProvider = ({ children }) => {
             console.error(error);
             setLoading(false);
         }
-    }
+    };
 
     const data = {
         user,
         token: storageController.getToken(), // Asegúrate de exponer el token
         login,
         logout,
-        upDataUser: () => console.log('update user')
+        updateUserData,
     };
 
     if (loading) return null;

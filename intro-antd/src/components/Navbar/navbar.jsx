@@ -22,6 +22,8 @@ const Navbar = () => {
         url: index === 0 ? "/" : `/${name.toLowerCase()}`,
     }));
 
+
+
     return (
         <>
             <Header className='header-content' style={{ backgroundColor: '#001529' }}>

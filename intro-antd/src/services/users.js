@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import { ENV } from "../utils/constants";
 import { authFetch } from "../utils/authFetch";
+import axios from 'axios';
 
 const getMe = async (token) => {
     try {
@@ -13,8 +14,24 @@ const getMe = async (token) => {
     } catch (error) {
         console.log(error);
     }
+
 }
 
+
+const updateUser = async (userId, updatedUserData, token) => {
+    const url = `${ENV.API_URL}/${ENV.ENDPOINTS.USER}/${userId}`;
+    const response = await axios.put(url, updatedUserData, {
+        headers: {
+            'x-access-token': token,
+        },
+    });
+    return response.data;
+};
+
 export const usersService = {
-    getMe
-}
+    getMe,
+    updateUser,
+};
+
+
+
