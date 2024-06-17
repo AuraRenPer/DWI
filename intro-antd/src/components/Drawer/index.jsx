@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Drawer, Avatar, Form, Input, Button, List } from 'antd';
+import { Drawer, Avatar, Form, Input, Button, message } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { AuthContext } from '../context/AuthContext';
 import loginImage from '../../assets/perfil.png';
@@ -11,6 +11,8 @@ const DrawerComponent = () => {
     const [formData, setFormData] = useState({
         username: '',
         email: '',
+        newPassword: '',
+        confirmNewPassword: ''
     });
 
     useEffect(() => {
@@ -18,6 +20,8 @@ const DrawerComponent = () => {
             setFormData({
                 username: user.username,
                 email: user.email,
+                newPassword: '',
+                confirmNewPassword: ''
             });
         }
     }, [user]);
@@ -39,12 +43,28 @@ const DrawerComponent = () => {
     };
 
     const handleSubmit = async () => {
+        if (formData.newPassword && formData.newPassword !== formData.confirmNewPassword) {
+            message.error('Las contraseñas no coinciden');
+            return;
+        }
+
+        const updatedUserData = {
+            username: formData.username,
+            email: formData.email,
+        };
+
+        if (formData.newPassword) {
+            updatedUserData.password = formData.newPassword;
+        }
+
         try {
-            await updateUserData(formData);
+            await updateUserData(updatedUserData);
             setEditMode(false);
             onClose();
+            message.success('Datos actualizados correctamente');
         } catch (error) {
             console.error('Error al actualizar los datos del usuario:', error);
+            message.error('Error al actualizar los datos del usuario');
         }
     };
 
@@ -78,12 +98,29 @@ const DrawerComponent = () => {
                             <Form.Item label="Email">
                                 <Input
                                     name="email"
-                                    
                                     value={formData.email}
                                     onChange={handleInputChange}
                                     disabled={!editMode}
                                 />
                             </Form.Item>
+                            {editMode && (
+                                <>
+                                    <Form.Item label="Nueva Contraseña">
+                                        <Input.Password
+                                            name="newPassword"
+                                            value={formData.newPassword}
+                                            onChange={handleInputChange}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Confirmar Nueva Contraseña">
+                                        <Input.Password
+                                            name="confirmNewPassword"
+                                            value={formData.confirmNewPassword}
+                                            onChange={handleInputChange}
+                                        />
+                                    </Form.Item>
+                                </>
+                            )}
                             <Form.Item>
                                 {editMode ? (
                                     <>
@@ -101,16 +138,6 @@ const DrawerComponent = () => {
                                 )}
                             </Form.Item>
                         </Form>
-                        <List
-                            style={{ marginTop: '20px' }}
-                            bordered
-                            dataSource={['Modificar contraseña']}
-                            renderItem={(item) => (
-                                <List.Item>
-                                    <a href='/register'>{item}</a>
-                                </List.Item>
-                            )}
-                        />
                     </div>
                 ) : (
                     <p>Error</p>

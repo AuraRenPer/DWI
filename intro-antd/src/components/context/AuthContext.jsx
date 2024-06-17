@@ -1,5 +1,4 @@
 import React, { useState, useEffect, createContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { storageController } from '../../services/token';
 import { usersService } from '../../services/users';
 import { tokenExpired } from '../../utils/tokenExpired';
@@ -49,9 +48,9 @@ export const AuthProvider = (props) => {
             if (!token) {
                 throw new Error('No hay token disponible');
             }
-    
+
             console.log('Actualizando datos del usuario:', updatedUserData);
-            const response = await usersService.updateUser(user._id, updatedUserData);
+            const response = await usersService.updateUser(user._id, updatedUserData, token);
             setUser(response);
             setLoading(false);
             console.log('Datos actualizados del usuario:', response);
@@ -60,8 +59,6 @@ export const AuthProvider = (props) => {
             setLoading(false);
         }
     };
-    
-
 
     const logout = async () => {
         try {
