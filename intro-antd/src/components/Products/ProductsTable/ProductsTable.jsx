@@ -23,32 +23,32 @@ const ProductsTable = () => {
     // Contexto de autenticación
     const { token } = useContext(AuthContext);
 
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const response = await axios.get(`${ENV.API_URL}/${ENV.ENDPOINTS.ADMISION}`);
-                if (Array.isArray(response.data)) {
-                    setProducts(response.data);
-                } else {
-                    setError('La respuesta de la API no es un arreglo');
-                }
-            } catch (err) {
-                setError('Error al obtener los datos de la API');
-                console.error(err);
+    const fetchProducts = async () => {
+        try {
+            const response = await axios.get(`${ENV.API_URL}/${ENV.ENDPOINTS.ADMISION}`);
+            if (Array.isArray(response.data)) {
+                setProducts(response.data);
+            } else {
+                setError('La respuesta de la API no es un arreglo');
             }
-        };
+        } catch (err) {
+            setError('Error al obtener los datos de la API');
+            console.error(err);
+        }
+    };
+
+    useEffect(() => {
         fetchProducts();
     }, []);
 
     const addProduct = async (values) => {
         setLoading(true);
-
         try {
             if (token) {
                 console.log('Token:', token);
                 console.log('Datos del formulario:', values);
-                // Aquí deberías implementar el POST a tu API, incluyendo el token en los headers
                 await authService.addProduct(values.newName, values.newActivo, token);
+                fetchProducts();
             } else {
                 console.error('Token no encontrado');
                 setRegisterError(true);
@@ -62,6 +62,50 @@ const ProductsTable = () => {
             setRegisterError(true);
         } finally {
             setLoading(false); // Establece el estado de carga a false después de recibir cualquier respuesta
+        }
+    };
+
+    const editProduct = async (id, values) => {
+        setLoading(true);
+        try {
+            if (token) {
+                await authService.editProduct(id, values.newName, values.newActivo, token);
+                fetchProducts();
+            } else {
+                console.error('Token no encontrado');
+                setRegisterError(true);
+            }
+        } catch (error) {
+            if (error.response) {
+                console.error('Error en la edición:', error.response.data);
+            } else {
+                console.error('Error en la edición:', error.message);
+            }
+            setRegisterError(true);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const deleteProduct = async (id) => {
+        setLoading(true);
+        try {
+            if (token) {
+                await authService.deleteProduct(id, token);
+                fetchProducts();
+            } else {
+                console.error('Token no encontrado');
+                setRegisterError(true);
+            }
+        } catch (error) {
+            if (error.response) {
+                console.error('Error en la eliminación:', error.response.data);
+            } else {
+                console.error('Error en la eliminación:', error.message);
+            }
+            setRegisterError(true);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -88,7 +132,7 @@ const ProductsTable = () => {
         if (modalMode === 'add') {
             addProduct(values);
         } else if (modalMode === 'edit' && currentProduct) {
-            // updateProduct(values); // Asegúrate de implementar updateProduct si no lo tienes
+            editProduct(currentProduct._id, values);
         }
 
         setIsModalVisible(false);
@@ -100,6 +144,12 @@ const ProductsTable = () => {
         setIsModalVisible(false);
         setNewName('');
         setNewActivo(false);
+    };
+
+    const confirmDeleteProduct = (id) => {
+        if (window.confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+            deleteProduct(id);
+        }
     };
 
     const formatDate = (dateString) => {
