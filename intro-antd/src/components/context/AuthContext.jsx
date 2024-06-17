@@ -1,12 +1,13 @@
 import React, { useState, useEffect, createContext } from 'react';
 import { storageController } from '../../services/token';
+
 import { usersService } from '../../services/users';
 import { tokenExpired } from '../../utils/tokenExpired';
 
 export const AuthContext = createContext();
 
-export const AuthProvider = (props) => {
-    const { children } = props;
+
+export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -27,6 +28,8 @@ export const AuthProvider = (props) => {
             login(token);
         }
     };
+
+
 
     const login = async (token) => {
         try {
@@ -59,6 +62,7 @@ export const AuthProvider = (props) => {
             setLoading(false);
         }
     };
+    
 
     const logout = async () => {
         try {
@@ -73,6 +77,7 @@ export const AuthProvider = (props) => {
 
     const data = {
         user,
+        token: storageController.getToken(), // Asegúrate de exponer el token
         login,
         logout,
         updateUserData,
