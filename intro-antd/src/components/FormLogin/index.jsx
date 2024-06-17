@@ -18,10 +18,11 @@ const FormLogin = () => {
         setLoginError(false);
 
         try {
+            
             const response = await authService.loginForm(values.username, values.password);
 
             if (response && response.data) {
-                const token = response.data.generatedToken; // Asegúrate de que estás accediendo a la clave correcta
+                const token = response.data.generatedToken; // Accediendo a la clave correcta
                 if (token) {
                     localStorage.setItem('token', token);
                     await login(token); // Llama a la función login del contexto

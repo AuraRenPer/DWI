@@ -1,0 +1,71 @@
+.table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin: 10px 0 150px 0; /* Reduce el margen superior */
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background-color: #fff; /* Fondo blanco para el contenedor */
+    padding: 20px;
+}
+
+.add-button {
+    background-color: #4a148c; /* Color morado oscuro */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 10px; /* Espacio entre el botón y la tabla */
+}
+
+.add-button:hover {
+    background-color: #3700b3; /* Color morado más oscuro */
+}
+
+.formato-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 18px;
+    text-align: left;
+    background-color: #fff;
+}
+
+.formato-tabla thead {
+    background-color: #4a148c; /* Color morado oscuro */
+    color: #fff;
+}
+
+.formato-tabla th, .formato-tabla td {
+    padding: 12px 15px;
+}
+
+.formato-tabla tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.formato-tabla tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.formato-tabla tbody tr:last-of-type {
+    border-bottom: 2px solid #4a148c; /* Color morado oscuro */
+}
+
+.formato-tabla tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.formato-tabla button {
+    background-color: #4a148c; /* Color morado oscuro */
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.formato-tabla button:hover {
+    background-color: #3700b3; /* Color morado más oscuro */
+}
