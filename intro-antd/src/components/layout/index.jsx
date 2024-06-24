@@ -2,23 +2,22 @@ import React from 'react';
 import { Col, Row } from 'antd';
 import './Layout.css';
 
-
-/* Pasar por propiedades los cambios 
-Layout Component Reutilizable
-
-*/
 const LayoutComponent = ({ leftColSize, rightColSize, leftContent, rightContent }) => {
     return (
         <div className="layout-container">
             <Row>
                 <Col xs={leftColSize.xs} sm={leftColSize.sm} md={leftColSize.md} lg={leftColSize.lg}>
                     <div className="content-left">
-                        {leftContent}
+                        <div className="content-wrapper">
+                            {leftContent}
+                        </div>
                     </div>
                 </Col>
                 <Col xs={rightColSize.xs} sm={rightColSize.sm} md={rightColSize.md} lg={rightColSize.lg}>
                     <div className="content-right">
-                        {rightContent}
+                        <div className="content-wrapper">
+                            {rightContent}
+                        </div>
                     </div>
                 </Col>
             </Row>
@@ -27,7 +26,3 @@ const LayoutComponent = ({ leftColSize, rightColSize, leftContent, rightContent 
 }
 
 export default LayoutComponent;
-
-//slr = para crear un index = LayoutComponent
-/* xs y sm es para el tamaño de pantallas 
-Mis pantallas son de 24 puntos, por elloos debe sumar 24 cada xs, sm, md, lg*/

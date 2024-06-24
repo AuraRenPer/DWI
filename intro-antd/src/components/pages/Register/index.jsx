@@ -6,8 +6,8 @@ import ImageLogin from '../../ImageLogin'
 const Register = () => {
     return (
         <LayoutComponent
-        leftColSize={{xs:0, sm:0, md:8, lg: 6}}
-        rightColSize={{xs:24, sm:24, md:16, lg:18}}
+        leftColSize={{ xs: 24, sm: 24, md: 8, lg: 8 }}
+        rightColSize={{ xs: 24, sm: 24, md: 16, lg: 16 }}
         leftContent={<ImageLogin />}
         rightContent={<FormRegister />}
       />

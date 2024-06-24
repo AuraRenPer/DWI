@@ -4,7 +4,7 @@ import { Layout, Menu } from 'antd';
 import DrawerComponent from '../Drawer/index';  // Asegúrate de que la ruta es correcta
 const { Header } = Layout;
 
-import logo from '../../assets/kirby3.png';
+import logo from '../../assets/uteq2.png';
 import './Navbar.css';  // Importa el archivo CSS
 
 const Navbar = () => {
@@ -28,7 +28,7 @@ const Navbar = () => {
         <>
             <Header className='header-content' style={{ backgroundColor: '#001529' }}>
                 <Link to="/" style={{ display: 'flex', alignItems: 'center', marginRight: '20px' }} onClick={handleLogoClick}>
-                    <img src={logo} alt="logo" style={{ width: '50px', height: 'auto' }} />
+                    <img src={logo} alt="logo" style={{ width: '140px', height: 'auto' }} />
                 </Link>
                 <Menu
                     theme="dark"

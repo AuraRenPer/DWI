@@ -21,8 +21,24 @@
     align-items: center;
 }
 
-.title{
+.content-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center; /* Alineación de texto centrada */
+    padding: 1rem; /* Añadir espacio interior al contenido */
+}
+
+.title {
     font-size: 2rem;
     font-weight: bold;
     color: rgb(255, 255, 255);
+}
+
+@media (max-width: 768px) {
+    .title {
+        font-size: 1.5rem; /* Reducir el tamaño de fuente en pantallas pequeñas */
+    }
 }

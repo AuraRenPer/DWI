@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { Modal, Button, Input, Switch } from 'antd';
+import { Modal, Button, Input, Switch, notification } from 'antd';
+import { RiDeleteBin6Line, RiEdit2Line, RiAddLine } from 'react-icons/ri';
 import { ENV } from '../../../utils/constants';
 import './ProductsTable.css';
 import authService from '../../../services/admisiones';
@@ -14,14 +15,13 @@ const ProductsTable = () => {
     const [currentProduct, setCurrentProduct] = useState(null);
     const [newName, setNewName] = useState('');
     const [newActivo, setNewActivo] = useState(false);
-
-    // Estado de error de registro
     const [registroError, setRegisterError] = useState(false);
-    // Estado de carga 
     const [loading, setLoading] = useState(false);
-
-    // Contexto de autenticación
     const { user, token } = useContext(AuthContext);
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
 
     const fetchProducts = async () => {
         try {
@@ -36,10 +36,6 @@ const ProductsTable = () => {
             console.error(err);
         }
     };
-
-    useEffect(() => {
-        fetchProducts();
-    }, []);
 
     const addProduct = async (values) => {
         setLoading(true);
@@ -58,6 +54,7 @@ const ProductsTable = () => {
         try {
             await authService.editProduct(id, values.newName, values.newActivo, token);
             fetchProducts();
+            showEditNotification();
         } catch (error) {
             handleApiError(error);
         } finally {
@@ -70,6 +67,7 @@ const ProductsTable = () => {
         try {
             await authService.deleteProduct(id, token);
             fetchProducts();
+            showDeleteNotification();
         } catch (error) {
             handleApiError(error);
         } finally {
@@ -84,6 +82,20 @@ const ProductsTable = () => {
             console.error('Error:', error.message);
         }
         setRegisterError(true);
+    };
+
+    const showDeleteNotification = () => {
+        notification.success({
+            message: 'Producto Eliminado',
+            description: 'El producto ha sido eliminado correctamente.',
+        });
+    };
+
+    const showEditNotification = () => {
+        notification.success({
+            message: 'Producto Editado',
+            description: 'Los cambios han sido guardados correctamente.',
+        });
     };
 
     const showModal = (mode, product) => {
@@ -124,9 +136,16 @@ const ProductsTable = () => {
     };
 
     const confirmDeleteProduct = (id) => {
-        if (window.confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-            deleteProduct(id);
-        }
+        Modal.confirm({
+            title: 'Confirmar Eliminación',
+            content: '¿Estás seguro de que deseas eliminar este producto?',
+            okText: 'Eliminar',
+            okType: 'danger',
+            cancelText: 'Cancelar',
+            onOk() {
+                deleteProduct(id);
+            },
+        });
     };
 
     const formatDate = (dateString) => {
@@ -139,46 +158,80 @@ const ProductsTable = () => {
     }
 
     return (
-        <div className="table-container">
-            {user && <button className="add-button" onClick={() => showModal('add', null)}>Agregar</button>}
-            <table className="formato-tabla">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Fecha de creación</th>
-                        <th>Activo</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {products.map(product => (
-                        <tr key={product._id}>
-                            <td>{product._id}</td>
-                            <td>{product.nombre}</td>
-                            <td>{formatDate(product.createdAt)}</td>
-                            <td>{product.activo ? 'Activo' : 'Inactivo'}</td>
-                            <td>
-                                {user && (
-                                    <>
-                                        <button onClick={() => confirmDeleteProduct(product._id)}>Eliminar</button>
-                                        <button onClick={() => showModal('edit', product)}>Editar</button>
-                                    </>
-                                )}
-                            </td>
+        <div className="products-table-page">
+            {user && (
+                <div className="buttons-container">
+                    <Button
+                        className="add-button"
+                        type="primary"
+                        onClick={() => showModal('add', null)}
+                        icon={<RiAddLine />}
+                    >
+                        Agregar Producto
+                    </Button>
+                </div>
+            )}
+            <div className="table-container">
+                <table className="formato-tabla">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Fecha de creación</th>
+                            <th>Activo</th>
+                            <th>Acciones</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {products.map((product) => (
+                            <tr key={product._id}>
+                                <td>{product._id}</td>
+                                <td>{product.nombre}</td>
+                                <td>{formatDate(product.createdAt)}</td>
+                                <td>{product.activo ? 'Activo' : 'Inactivo'}</td>
+                                <td>
+                                    {user && (
+                                        <>
+                                            <Button
+                                                className="action-button"
+                                                type="danger"
+                                                onClick={() => confirmDeleteProduct(product._id)}
+                                                icon={<RiDeleteBin6Line />}
+                                            >
+                                                Eliminar
+                                            </Button>
+                                            <Button
+                                                className="action-button"
+                                                type="success"
+                                                onClick={() => showModal('edit', product)}
+                                                icon={<RiEdit2Line />}
+                                            >
+                                                Editar
+                                            </Button>
+                                        </>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
             <Modal
                 title={modalMode === 'add' ? 'Agregar Producto' : 'Editar Producto'}
                 visible={isModalVisible}
                 onOk={handleOk}
                 onCancel={handleCancel}
+                okText="Guardar"
+                cancelText="Cancelar"
             >
-                <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Nombre del producto" />
-                <br /><br />
-                <label>Activo:</label>
+                <Input
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    placeholder="Nombre del producto"
+                    style={{ marginBottom: 16 }}
+                />
+                <br />
+                <label style={{ marginRight: 8 }}>Activo:</label>
                 <Switch checked={newActivo} onChange={(checked) => setNewActivo(checked)} />
             </Modal>
         </div>
