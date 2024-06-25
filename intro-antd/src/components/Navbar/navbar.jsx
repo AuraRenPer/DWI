@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
-import DrawerComponent from '../Drawer/index';  // Asegúrate de que la ruta es correcta
+import DrawerComponent from '../Drawer/index'; // Asegúrate de que la ruta es correcta
 const { Header } = Layout;
 
-import logo from '../../assets/uteq2.png';
-import './Navbar.css';  // Importa el archivo CSS
+import logo from '../../assets/uteq3.png';
+import './Navbar.css'; // Importa el archivo CSS
 
 const Navbar = () => {
     const [selectedKey, setSelectedKey] = useState('1');
@@ -14,7 +14,7 @@ const Navbar = () => {
         setSelectedKey('');
     };
 
-    const tabNames = ["", "Productos", "Servicios", "Contactos"];
+    const tabNames = ["Inicio", "Admisiones", "Servicios", "Contactos"];
 
     const items = tabNames.map((name, index) => ({
         key: index + 1,
@@ -22,13 +22,11 @@ const Navbar = () => {
         url: index === 0 ? "/" : `/${name.toLowerCase()}`,
     }));
 
-
-
     return (
         <>
-            <Header className='header-content' style={{ backgroundColor: '#001529' }}>
-                <Link to="/" style={{ display: 'flex', alignItems: 'center', marginRight: '20px' }} onClick={handleLogoClick}>
-                    <img src={logo} alt="logo" style={{ width: '140px', height: 'auto' }} />
+            <Header className='header-content'>
+                <Link to="/" style={{ display: 'flex', alignItems: 'center' }} onClick={handleLogoClick}>
+                    <img src={logo} alt="logo" />
                 </Link>
                 <Menu
                     theme="dark"
@@ -39,8 +37,6 @@ const Navbar = () => {
                         justifyContent: 'flex-end',
                         flex: 1,
                         minWidth: 0,
-                        marginRight: '20px',
-                        backgroundColor: '#001529',
                     }}
                 >
                     {items.map(item => (

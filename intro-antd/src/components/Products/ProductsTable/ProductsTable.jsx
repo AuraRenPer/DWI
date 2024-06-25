@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Modal, Button, Input, Switch, notification } from 'antd';
 import { RiDeleteBin6Line, RiEdit2Line, RiAddLine } from 'react-icons/ri';
 import { ENV } from '../../../utils/constants';
-import './ProductsTable.css';
+import './ProductsTable.css'; // Mantener el nombre del archivo CSS
 import authService from '../../../services/admisiones';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -37,10 +37,10 @@ const ProductsTable = () => {
         }
     };
 
-    const addProduct = async (values) => {
+    const addAdmision = async (values) => { // Cambio en el nombre de la función
         setLoading(true);
         try {
-            await authService.addProduct(values.newName, values.newActivo, token);
+            await authService.addProduct(values.newName, values.newActivo, token); // Mantener el nombre de la función del servicio
             fetchProducts();
         } catch (error) {
             handleApiError(error);
@@ -49,10 +49,10 @@ const ProductsTable = () => {
         }
     };
 
-    const editProduct = async (id, values) => {
+    const editAdmision = async (id, values) => { // Cambio en el nombre de la función
         setLoading(true);
         try {
-            await authService.editProduct(id, values.newName, values.newActivo, token);
+            await authService.editProduct(id, values.newName, values.newActivo, token); // Mantener el nombre de la función del servicio
             fetchProducts();
             showEditNotification();
         } catch (error) {
@@ -62,10 +62,10 @@ const ProductsTable = () => {
         }
     };
 
-    const deleteProduct = async (id) => {
+    const deleteAdmision = async (id) => { // Cambio en el nombre de la función
         setLoading(true);
         try {
-            await authService.deleteProduct(id, token);
+            await authService.deleteProduct(id, token); // Mantener el nombre de la función del servicio
             fetchProducts();
             showDeleteNotification();
         } catch (error) {
@@ -86,15 +86,15 @@ const ProductsTable = () => {
 
     const showDeleteNotification = () => {
         notification.success({
-            message: 'Producto Eliminado',
-            description: 'El producto ha sido eliminado correctamente.',
+            message: 'Admisión Eliminada', // Cambio en el mensaje de notificación
+            description: 'La admisión ha sido eliminada correctamente.', // Cambio en el mensaje de notificación
         });
     };
 
     const showEditNotification = () => {
         notification.success({
-            message: 'Producto Editado',
-            description: 'Los cambios han sido guardados correctamente.',
+            message: 'Admisión Editada', // Cambio en el mensaje de notificación
+            description: 'Los cambios han sido guardados correctamente para la admisión.', // Cambio en el mensaje de notificación
         });
     };
 
@@ -119,9 +119,9 @@ const ProductsTable = () => {
         };
 
         if (modalMode === 'add') {
-            addProduct(values);
+            addAdmision(values); // Llamar a la función renombrada
         } else if (modalMode === 'edit' && currentProduct) {
-            editProduct(currentProduct._id, values);
+            editAdmision(currentProduct._id, values); // Llamar a la función renombrada
         }
 
         setIsModalVisible(false);
@@ -135,15 +135,15 @@ const ProductsTable = () => {
         setNewActivo(false);
     };
 
-    const confirmDeleteProduct = (id) => {
+    const confirmDeleteAdmision = (id) => { // Cambio en el nombre de la función
         Modal.confirm({
             title: 'Confirmar Eliminación',
-            content: '¿Estás seguro de que deseas eliminar este producto?',
+            content: '¿Estás seguro de que deseas eliminar esta admisión?', // Cambio en el mensaje del modal
             okText: 'Eliminar',
             okType: 'danger',
             cancelText: 'Cancelar',
             onOk() {
-                deleteProduct(id);
+                deleteAdmision(id); // Llamar a la función renombrada
             },
         });
     };
@@ -167,7 +167,7 @@ const ProductsTable = () => {
                         onClick={() => showModal('add', null)}
                         icon={<RiAddLine />}
                     >
-                        Agregar Producto
+                        Agregar Admisión {/* Cambio en el texto del botón */}
                     </Button>
                 </div>
             )}
@@ -195,7 +195,7 @@ const ProductsTable = () => {
                                             <Button
                                                 className="action-button"
                                                 type="danger"
-                                                onClick={() => confirmDeleteProduct(product._id)}
+                                                onClick={() => confirmDeleteAdmision(product._id)} // Llamar a la función renombrada
                                                 icon={<RiDeleteBin6Line />}
                                             >
                                                 Eliminar
@@ -217,7 +217,7 @@ const ProductsTable = () => {
                 </table>
             </div>
             <Modal
-                title={modalMode === 'add' ? 'Agregar Producto' : 'Editar Producto'}
+                title={modalMode === 'add' ? 'Agregar Admisión' : 'Editar Admisión'} // Cambio en el título del modal
                 visible={isModalVisible}
                 onOk={handleOk}
                 onCancel={handleCancel}
@@ -227,7 +227,7 @@ const ProductsTable = () => {
                 <Input
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
-                    placeholder="Nombre del producto"
+                    placeholder="Nombre de la admisión" // Cambio en el placeholder del input
                     style={{ marginBottom: 16 }}
                 />
                 <br />

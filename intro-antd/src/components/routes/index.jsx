@@ -17,6 +17,7 @@ const AppRoutes = () => {
         { path: '/login', element: <Login /> },
         { path: '/register', element: <Register /> },
         { path: '/productos', element: <ProductsPage /> },
+        { path: '/Admisiones', element: <ProductsPage /> },
         { path: '*', element: <NotFound /> },  // Ruta para páginas no encontradas
     ]);
 
