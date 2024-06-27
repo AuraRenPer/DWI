@@ -5,7 +5,10 @@
     justify-content: flex-start;
     padding: 20px;
     background-color: #e0e0e0; /* Fondo más claro para mejor contraste */
+    min-height: calc(100vh - 64px);
+
 }
+
 
 .buttons-container {
     width: 100%;
